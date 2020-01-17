@@ -1,13 +1,13 @@
 from control.matlab import *
 import matplotlib.pyplot as plt
 from control import *
-
-# num4=[0.033,0.018,0.0014]
-# den4=[1,0]
-# w4=tf(num4, den4)
-num4= [0.0118,0.000968]
-den4= [1,0]
-w4= tf(num4, den4)
+#Ручной подбор параметров ПИД6
+num4=[0.033,0.018,0.0014]
+den4=[1,0]
+#Ручной подбор ПИ-регулятора
+# num4= [0.0118,0.000968]
+# den4= [1,0]
+w4=tf(num4, den4)
 
 num1= [1]
 den1= [4,1]
@@ -26,24 +26,24 @@ w7= tf(num7, den7)
 w6=feedback(w5, w7, -1)
 T=[]
 from numpy import *
-
-
 y,x=step(w6)
+
+#Определение tрег по графику
 for i in range(0,len(y)):
     if (y[i] - 0.947) < 0.001:
         X = x[i]
-
-
-    Y = y[i]
+        Y = y[i]
     Xx, Yy = [X, X], [y[i], 0]
     plt.plot(X, Y, '-o')
 treg = Xx[0]
 print ("Время рег. по графику= ", treg)
+#Нахождение интегральной оценки
 int=0
 for i in range(0, 40):
     int = int + abs(y[40] - y[i])*x[1]
 print("Оценка интегрирования: ", int)
 print("W(p)= "+str(w6))
+#+-5% от Yуст
 plt.plot([0,80],[0.95*y[-1],0.95*y[-1]],"b")
 plt.plot([0,80],[1.05*y[-1],1.05*y[-1]],"b")
 plt.plot(x,y,"r")
@@ -63,6 +63,7 @@ plt.plot()
 plt.show()
 from sympy import *
 from math import *
+#Корневые показатели качества:
 treg=((-3)/re(max(pole)))
 print ("Время регулирования= ",treg)
 wk=im(pole[1])
@@ -80,10 +81,9 @@ plt.show()
 import numpy as np
 from sympy import *
 import matplotlib as mpl
+#Построение АЧХ:
 x=S('x')
 p = 84*x**3+61*x**2+14*x+1
-
-
 def f(w):
      T1=7;T2=4;T3=3
      K1=100; K2=1;K3=1
@@ -93,6 +93,7 @@ Im=[f(w).imag   for w in np.arange(0.001,5,0.001)]
 Re=[f(w).real for w in np.arange(0.001,5,0.001)]
 def fz(Kp,Ki,kd):
          j=(-1)**0.5
+         #Меняем Modz в зависимости от типа регулятора
          Modz=[abs(((kd*(j*w)**2+Kp*j*w+Ki)*f(w))/(j*w+(kd*(j*w)**2+Kp*j*w+Ki)*f(w))) for w in np.arange(0.001,1,0.001)]
          return Modz
 KpП = 0.018; KiП = 0.0014; KdП=0.033
